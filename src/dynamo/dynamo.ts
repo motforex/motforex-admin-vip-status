@@ -17,7 +17,7 @@ import * as build from './command';
 
 // Initialize DynamoDB client
 const dynamoDb = new DynamoDBClient({ region: 'ap-southeast-1' });
-const docClient = DynamoDBDocumentClient.from(dynamoDb);
+export const docClient = DynamoDBDocumentClient.from(dynamoDb);
 
 export async function getTableDescription(tableName: string): Promise<DescribeTableCommandOutput> {
   try {

@@ -1,12 +1,4 @@
 import type { AWS } from '@serverless/typescript';
-import { testFunc } from '@/functions/test';
-import {
-  getExampleTableDesc,
-  getExampleItemById,
-  getExampleItemsByQuery,
-  postCreateExampleItem,
-  putUpdateExampleItem,
-} from '@/functions/example';
 
 const serverlessConfig: AWS = {
   service: 'service-name',
@@ -21,14 +13,7 @@ const serverlessConfig: AWS = {
     profile: 'default',
     logRetentionInDays: 365,
   },
-  functions: {
-    testFunc,
-    getExampleTableDesc,
-    getExampleItemById,
-    getExampleItemsByQuery,
-    postCreateExampleItem,
-    putUpdateExampleItem,
-  },
+  functions: {},
   package: { individually: true },
   custom: {
     prune: {
