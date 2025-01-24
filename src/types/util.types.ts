@@ -81,3 +81,22 @@ export const PaginationSchema = z.object({
 });
 
 export type Pagination = z.infer<typeof PaginationSchema>;
+
+export const DailySummarySchema = z.object({
+  login: z.number(),
+  timestamp: z.number(),
+  commission: z.string().default('0'),
+  date: z.string(),
+  email: z.string(),
+  endDate: z.string(),
+  group: z.string(),
+  lot: z.number(),
+  profit: z.string().default('0'),
+  startDate: z.string(),
+  swap: z.string().default('0'),
+  totalDeposit: z.number().default(0),
+  totalWithdraw: z.number().default(0),
+  type: z.number(),
+});
+
+export type DailySummary = z.infer<typeof DailySummarySchema>;

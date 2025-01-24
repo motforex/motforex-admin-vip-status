@@ -1,0 +1,1 @@
+export const CONFIG_VIP_LEVELS = 'CONFIG_VIP_LEVELS';

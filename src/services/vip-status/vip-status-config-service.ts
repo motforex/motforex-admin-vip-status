@@ -8,8 +8,7 @@ import { logger } from '@/libs/winston';
 import { checkAuthorization } from '@/libs/auth';
 import { RequestMetadata } from '@/types/api-function.types';
 import { UpdateVipConfigRequestSchema } from '@/types';
-
-export const CONFIG_VIP_LEVELS = 'CONFIG_VIP_LEVELS';
+import { CONFIG_VIP_LEVELS } from '@/constants';
 
 export async function getVipConfig(): Promise<APIResponse> {
   try {
