@@ -2,10 +2,8 @@ import { BatchGetCommand } from '@aws-sdk/lib-dynamodb';
 
 import type { ReturnValue } from '@aws-sdk/client-dynamodb';
 import { updateRecord, getRecordByKey, queryRecords, docClient } from '@/dynamo';
-// import { omit } from 'lodash';
 import { CustomConfig } from '@/types';
 import type { CustomQueryCommandOutput as QueryOutput, QueryRequest } from '@/dynamo';
-
 const CUSTOM_CONFIG_TABLE = 'motforex-custom-configs';
 
 type QueryResponse = QueryOutput<Partial<CustomConfig>>;
@@ -44,27 +42,20 @@ export async function getCustomConfigByQuery(query: QueryRequest, projection?: s
     projectionExpression: projection,
   });
 }
-export async function updateCustomConfig(config: CustomConfig): Promise<CustomConfig | undefined> {
-  return await updateRecord<CustomConfig>({
-    tableName: CUSTOM_CONFIG_TABLE,
-    key: { code: config.code },
-    item: config,
-  });
-}
 
 export async function updateCustomConfigByCustomUpdateQuery(
   config: CustomConfig,
   updateExpression: string,
   expAttributeValues: Record<string, unknown>,
-  conditionExpression?: string,
+  conditionalExp?: string,
   returnValues = 'UPDATED_NEW' as ReturnValue
 ): Promise<CustomConfig | undefined> {
   return await updateRecord<CustomConfig>({
     tableName: CUSTOM_CONFIG_TABLE,
     key: { code: config.code },
     item: config,
+    conditionExpression: conditionalExp,
     updateExpression,
-    conditionExpression,
     extraExpressionAttributeValues: expAttributeValues,
     returnValues,
   });

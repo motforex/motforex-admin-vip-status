@@ -1,7 +1,7 @@
 import { formatApiResponse } from '@/libs/format';
 import type { APIGatewayProxyResultV2 as APIResponse } from 'aws-lambda';
 
-import { getCustomConfigByCode, updateCustomConfig } from '@/repository/custom-configs-repository';
+import { getCustomConfigByCode } from '@/repository/custom-configs-repository';
 import { handleApiFuncError } from '@/error';
 import CustomError from '@/error/custom-error';
 import { logger } from '@/libs/winston';

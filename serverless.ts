@@ -1,3 +1,5 @@
+import { determineUserVipStatus } from '@/functions/user-vip-status';
+import { getVipConfigs, updateVipConfig } from '@/functions/vip-status-config';
 import type { AWS } from '@serverless/typescript';
 
 const serverlessConfig: AWS = {
@@ -13,7 +15,11 @@ const serverlessConfig: AWS = {
     profile: 'default',
     logRetentionInDays: 365,
   },
-  functions: {},
+  functions: {
+    getVipConfigs,
+    updateVipConfig,
+    determineUserVipStatus,
+  },
   package: { individually: true },
   custom: {
     prune: {
