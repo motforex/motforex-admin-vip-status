@@ -1,4 +1,4 @@
-import { determineUserVipStatus } from '@/functions/user-vip-status';
+import { determineUserVipStatus, determineVipStatusCron } from '@/functions/user-vip-status';
 import { getVipConfigs, updateVipConfig } from '@/functions/vip-status-config';
 import type { AWS } from '@serverless/typescript';
 
@@ -19,6 +19,7 @@ const serverlessConfig: AWS = {
     getVipConfigs,
     updateVipConfig,
     determineUserVipStatus,
+    determineVipStatusCron,
   },
   package: { individually: true },
   custom: {

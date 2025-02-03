@@ -49,10 +49,10 @@ const VipLevelSchema = z.object({
   order: z.number(),
   bonusPoints: z.number(),
   requirements: z.object({
-    depositMinAmount: z.number(),
-    depositMaxAmount: z.number(),
-    lotMinAmount: z.number(),
-    lotMaxAmount: z.number(),
+    depositMinAmount: z.string().optional(),
+    depositMaxAmount: z.string().optional(),
+    lotMinAmount: z.string(),
+    lotMaxAmount: z.string(),
   }),
 });
 
@@ -74,10 +74,10 @@ export const UpdateVipLevelRequestSchema = z.object({
   bonusPoints: z.number().optional(),
   requirements: z
     .object({
-      depositMinAmount: z.number().optional(),
-      depositMaxAmount: z.number().optional(),
-      lotMinAmount: z.number().optional(),
-      lotMaxAmount: z.number().optional(),
+      depositMinAmount: z.string().optional(),
+      depositMaxAmount: z.string().optional(),
+      lotMinAmount: z.string(),
+      lotMaxAmount: z.string(),
     })
     .optional(),
 });

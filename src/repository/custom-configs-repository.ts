@@ -43,7 +43,7 @@ export async function getCustomConfigByQuery(query: QueryRequest, projection?: s
   });
 }
 
-export async function updateCustomConfigByCustomUpdateQuery(
+export async function updateCustomConfigByQuery(
   config: CustomConfig,
   updateExpression: string,
   expAttributeValues: Record<string, unknown>,
@@ -58,5 +58,13 @@ export async function updateCustomConfigByCustomUpdateQuery(
     updateExpression,
     extraExpressionAttributeValues: expAttributeValues,
     returnValues,
+  });
+}
+
+export async function updateCustomConfig(config: CustomConfig): Promise<CustomConfig | undefined> {
+  return await updateRecord<CustomConfig>({
+    tableName: CUSTOM_CONFIG_TABLE,
+    key: { code: config.code },
+    item: config,
   });
 }

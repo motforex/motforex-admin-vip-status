@@ -1,12 +1,13 @@
-// import type { APIGatewayProxyResultV2 as ApiFuncRes } from 'aws-lambda';
-// import type { CustomAPIGatewayEvent as ApiFunc } from '@/libs/api-gateway';
-// import { formatApiResponse, middyfy } from '@/libs';
-// import { determineAllUsersVipStatus } from '@/services/vip-status/vip-status-util-service';
+import { logger, middyfy } from '@/libs';
+import { determineAllUsersVipStatus } from '@/services/vip-status/vip-status-util-service';
 
-// const determineUserVipStatusFunc: ApiFunc<null> = async (): Promise<ApiFuncRes> => {
-//   const res = await determineAllUsersVipStatus();
+const determineUserVipStatusCron = async (): Promise<void> => {
+  try {
+    return await determineAllUsersVipStatus();
+  } catch (error: unknown) {
+    logger.error('Error in determineUserVipStatusCron(): ', error);
+    return;
+  }
+};
 
-//   return formatApiResponse(res);
-// };
-
-// export const determineUserVipStatus = middyfy(determineUserVipStatusFunc);
+export const determineUserVipStatus = middyfy(determineUserVipStatusCron);

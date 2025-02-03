@@ -1,1 +1,3 @@
 export const CONFIG_VIP_LEVELS = 'CONFIG_VIP_LEVELS';
+
+export const BASIC_USER_VIP_STATUS = 'BASIC USER';
