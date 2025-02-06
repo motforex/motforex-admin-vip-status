@@ -1,5 +1,5 @@
 import { BASIC_USER_VIP_STATUS } from '@/constants';
-import { DailySummary, VipConfig } from '@/types';
+import { CustomConfig, DailySummary } from '@/types';
 
 export function sumTotalDepositAndLot(rows: DailySummary[]): { totalDeposit: number; totalLot: number } {
   let deposit = 0;
@@ -35,21 +35,21 @@ export function sumDailySummaries(rows: DailySummary[]): { deposit: number; lot:
   return { deposit, lot };
 }
 
-export function determineVipTier(deposit: number, lot: number, vipConfig: VipConfig): string {
-  const levels = vipConfig.levels;
-  if (!levels || levels.length === 0) {
+export function determineVipTier(deposit: number, lot: number, customConfigs: Partial<CustomConfig>[]): string {
+  if (!customConfigs || customConfigs.length === 0) {
     return BASIC_USER_VIP_STATUS;
   }
 
   let matched = BASIC_USER_VIP_STATUS;
-  for (const lvl of levels) {
-    const req = lvl.requirements;
-    if (req.lotMinAmount === undefined || req.lotMaxAmount === undefined) {
+  for (const lvl of customConfigs) {
+    const req = lvl.value;
+
+    if (req?.lotMinAmount === undefined || req?.lotMaxAmount === undefined) {
       continue;
     }
     const lotOk = lot >= Number(req.lotMinAmount) && lot <= Number(req.lotMaxAmount);
     if (lotOk) {
-      matched = lvl.name;
+      matched = req.subTitle;
       break;
     }
   }

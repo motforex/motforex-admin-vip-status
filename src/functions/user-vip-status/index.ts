@@ -1,4 +1,4 @@
-import { createDefaultApiFunction, createScheduledFunc } from '@/libs';
+import { createDefaultApiFunction } from '@/libs';
 
 export const determineUserVipStatus = createDefaultApiFunction(
   __dirname,
@@ -7,4 +7,4 @@ export const determineUserVipStatus = createDefaultApiFunction(
   '/v1/user/vip-status'
 );
 // cron every 5min
-export const determineVipStatusCron = createScheduledFunc(__dirname, 'determineUserVipStatus', ['cron(0/5 * * * ? *)']);
+// export const determineVipStatusCron = createScheduledFunc(__dirname, 'determineUserVipStatus', ['']);
