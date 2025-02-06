@@ -1,79 +1,26 @@
 import dayjs from 'dayjs';
 import { QueryRequest } from '@/dynamo';
 import { getDailySummaryByQuery } from '@/repository/daily-summary-repository';
-import { CustomError } from '@/error';
-import { getCustomConfigByCode } from '@/repository/custom-configs-repository';
-import { CONFIG_VIP_LEVELS } from '@/constants';
-import { VipConfig } from '@/types';
+
 import { logger } from '@/libs';
 import { determineVipTier, groupByEmail, sumTotalDepositAndLot } from '../utils/daily-summary-utils';
-
-// export async function determineUserVipStatus(login: number): Promise<string> {
-//   const vipData = (await getCustomConfigByCode(CONFIG_VIP_LEVELS)) as VipConfig | undefined;
-//   if (!vipData) {
-//     throw new CustomError(`VIP config '${CONFIG_VIP_LEVELS}' not found!`, 400);
-//   }
-//   const lastNDays = vipData?.promotionValidDateRange || 30;
-//   const levels = vipData?.levels as VipLevel[];
-
-//   if (!levels || levels.length === 0) {
-//     throw new CustomError(`VIP levels are not configured!`, 400);
-//   }
-
-//   const fromDate = dayjs().subtract(lastNDays, 'days').startOf('day');
-//   const fromTimestamp = fromDate.valueOf();
-
-//   const query: QueryRequest = {
-//     pKey: 'login',
-//     pKeyType: 'N',
-//     pKeyProp: String(login),
-//     sKey: 'timestamp',
-//     sKeyType: 'N',
-//     sKeyProp: String(fromTimestamp),
-//     skComparator: '>=',
-//     indexName: 'login-timestamp-index',
-//   };
-
-//   const dailySummaries = await getDailySummaryByQuery(query);
-
-//   let totalDeposit = 0;
-//   let totalLots = 0;
-//   for (const row of dailySummaries.items) {
-//     totalDeposit += Number(row.totalDeposit || 0);
-//     totalLots += Number(row.lot || 0);
-//   }
-
-//   let matchedLevelName = 'NO_STATUS';
-//   for (const lvl of levels) {
-//     const req = lvl.requirements;
-//     const depositOk = totalDeposit >= req.depositMinAmount && totalDeposit <= req.depositMaxAmount;
-//     const lotOk = totalLots >= req.lotMinAmount && totalLots <= req.lotMaxAmount;
-//     if (depositOk && lotOk) {
-//       matchedLevelName = lvl.name;
-//       break;
-//     }
-//   }
-
-//   return matchedLevelName;
-// }
+import { getCustomConfigByQuery } from '@/repository/custom-configs-repository';
 
 export async function determineAllUsersVipStatus(): Promise<void> {
   try {
-    logger.info('Starting determineAllUsersVipStatus...');
-    const now = new Date();
-
-    logger.info(`Current time: ${now.toISOString()}`);
-
-    const vipConfig = (await getCustomConfigByCode(CONFIG_VIP_LEVELS)) as VipConfig | undefined;
-    if (!vipConfig) {
-      throw new CustomError(`VIP config '${CONFIG_VIP_LEVELS}' not found!`, 400);
-    }
-
-    const days = vipConfig.promotionValidDateRange || 30;
+    const query: QueryRequest = {
+      indexName: 'parentCode-createdAt-index',
+      pKey: 'VIP',
+      pKeyProp: 'parentCode',
+      pKeyType: 'S',
+    };
+    const customConfig = await getCustomConfigByQuery(
+      query,
+      'code, value, valueType, description, isActive, isEditable, createdAt, createdBy, updatedAt, updatedBy'
+    );
+    const days = 30;
     const fromDate = dayjs().subtract(days, 'days').startOf('day');
     const fromTimestamp = fromDate.valueOf();
-
-    logger.info(`Determining all user VIP statuses from timestamp >= ${fromTimestamp}`);
 
     let pageCounter = 1;
     let totalProcessed = 0;
@@ -111,7 +58,7 @@ export async function determineAllUsersVipStatus(): Promise<void> {
       const groupedMap = groupByEmail(items);
       for (const [email, rows] of Object.entries(groupedMap)) {
         const { totalDeposit, totalLot } = sumTotalDepositAndLot(rows);
-        const newVip = determineVipTier(totalDeposit, totalLot, vipConfig);
+        const newVip = determineVipTier(totalDeposit, totalLot, customConfig.items);
 
         logger.info(`User:${email} => deposit:${totalDeposit}, lot:${totalLot} => VIP:${newVip}`);
       }
@@ -121,8 +68,7 @@ export async function determineAllUsersVipStatus(): Promise<void> {
 
       if (!lastEvaluatedKey) {
         logger.info('No more pages, stopping pagination.');
-        // log finish time
-        logger.info(`Current time: ${new Date().toISOString()}`);
+
         break;
       }
       exclusiveKey = lastEvaluatedKey;

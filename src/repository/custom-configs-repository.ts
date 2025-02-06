@@ -1,9 +1,11 @@
 import { BatchGetCommand } from '@aws-sdk/lib-dynamodb';
 
 import type { ReturnValue } from '@aws-sdk/client-dynamodb';
-import { updateRecord, getRecordByKey, queryRecords, docClient } from '@/dynamo';
+import { updateRecord, getRecordByKey, queryRecords, docClient, createRecord } from '@/dynamo';
 import { CustomConfig } from '@/types';
 import type { CustomQueryCommandOutput as QueryOutput, QueryRequest } from '@/dynamo';
+import { omit } from 'lodash';
+
 const CUSTOM_CONFIG_TABLE = 'motforex-custom-configs';
 
 type QueryResponse = QueryOutput<Partial<CustomConfig>>;
@@ -35,11 +37,16 @@ export async function getCustomConfigByCode(code: string, projection?: string): 
     projectionExpression: projection,
   });
 }
-export async function getCustomConfigByQuery(query: QueryRequest, projection?: string): Promise<QueryResponse> {
+export async function getCustomConfigByQuery(
+  query: QueryRequest,
+  projection?: string,
+  scanIdxForward = false
+): Promise<QueryResponse> {
   return await queryRecords<CustomConfig>({
     tableName: CUSTOM_CONFIG_TABLE,
     queryRequest: query,
     projectionExpression: projection,
+    scanIdxForward,
   });
 }
 
@@ -61,10 +68,26 @@ export async function updateCustomConfigByQuery(
   });
 }
 
-export async function updateCustomConfig(config: CustomConfig): Promise<CustomConfig | undefined> {
-  return await updateRecord<CustomConfig>({
+export async function updateCustomConfig(
+  config: CustomConfig,
+  conditionExpression?: string,
+  returnValues = 'NONE' as ReturnValue
+): Promise<CustomConfig> {
+  await updateRecord<CustomConfig>({
     tableName: CUSTOM_CONFIG_TABLE,
     key: { code: config.code },
+    item: { ...omit(config, ['code']) },
+    conditionExpression,
+    returnValues,
+  });
+  return config;
+}
+
+export async function createCustomConfig(config: CustomConfig): Promise<CustomConfig> {
+  await createRecord<CustomConfig>({
+    tableName: CUSTOM_CONFIG_TABLE,
     item: config,
   });
+
+  return config;
 }

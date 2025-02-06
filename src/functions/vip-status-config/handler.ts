@@ -3,7 +3,7 @@ import type { CustomAPIGatewayEvent as ApiFunc } from '@/libs/api-gateway';
 
 import { middyfy } from '@/libs';
 import { extractMetadata } from '@/libs/auth';
-import { handleApiFuncError } from '@/error';
+import { CustomError, handleApiFuncError } from '@/error';
 import * as vipConfigService from '@/services/vip-status';
 import { UpdateVipConfigRequest } from '@/types';
 
@@ -15,13 +15,24 @@ const getConfigsFunc: ApiFunc<null> = async (): Promise<ApiFuncRes> => {
   }
 };
 
-const putUpdateConfigFunc: ApiFunc<UpdateVipConfigRequest> = async (event): Promise<ApiFuncRes> => {
+const putConfigFunc: ApiFunc<UpdateVipConfigRequest> = async (event): Promise<ApiFuncRes> => {
   try {
-    return await vipConfigService.updateVipConfig(extractMetadata(event));
+    if (!event.pathParameters || !event.pathParameters.code) throw new CustomError(`Path variable is missing`);
+
+    return await vipConfigService.updateVipConfig(extractMetadata(event), event.pathParameters.code);
+  } catch (error: unknown) {
+    return handleApiFuncError(error);
+  }
+};
+
+const postConfigFunc: ApiFunc<UpdateVipConfigRequest> = async (event): Promise<ApiFuncRes> => {
+  try {
+    return await vipConfigService.createVipConfig(extractMetadata(event));
   } catch (error: unknown) {
     return handleApiFuncError(error);
   }
 };
 
 export const getVipConfigs = middyfy(getConfigsFunc);
-export const updateVipConfig = middyfy(putUpdateConfigFunc);
+export const updateVipConfig = middyfy(putConfigFunc);
+export const createVipConfig = middyfy(postConfigFunc);
