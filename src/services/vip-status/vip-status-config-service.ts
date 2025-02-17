@@ -33,6 +33,7 @@ export async function getVipConfig(): Promise<APIResponse> {
     }
     return formatApiResponse(result.items);
   } catch (error: unknown) {
+    logger.error('Error in getVipConfig(): ', error);
     return handleApiFuncError(error);
   }
 }
@@ -65,6 +66,7 @@ export async function updateVipConfig(metadata: RequestMetadata, code: string): 
     logger.info(`VIP config '${code}' updated by ${email}`);
     return formatApiResponse(result);
   } catch (error: unknown) {
+    logger.error('Error in updateVipConfig(): ', error);
     return handleApiFuncError(error);
   }
 }
@@ -105,6 +107,7 @@ export async function createVipConfig(metadata: RequestMetadata): Promise<APIRes
     logger.info(`VIP config '${configCode}' created by ${email}`);
     return formatApiResponse(result);
   } catch (error: unknown) {
+    logger.error('Error in createVipConfig(): ', error);
     return handleApiFuncError(error);
   }
 }
