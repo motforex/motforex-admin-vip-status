@@ -1,7 +1,12 @@
-import { createDefaultApiFunction } from '@/libs';
+import { createAuthenticatedApiFunction } from '@/libs';
 
-export const getVipConfigs = createDefaultApiFunction(__dirname, 'getVipConfigs', 'get', '/v1/configs');
+export const getVipConfigs = createAuthenticatedApiFunction(__dirname, 'getVipConfigs', 'get', '/v1/configs');
 
-export const updateVipConfig = createDefaultApiFunction(__dirname, 'updateVipConfig', 'put', '/v1/configs/{code}');
+export const updateVipConfig = createAuthenticatedApiFunction(
+  __dirname,
+  'updateVipConfig',
+  'put',
+  '/v1/configs/{code}'
+);
 
-export const createVipConfig = createDefaultApiFunction(__dirname, 'createVipConfig', 'post', '/v1/configs');
+export const createVipConfig = createAuthenticatedApiFunction(__dirname, 'createVipConfig', 'post', '/v1/configs');
